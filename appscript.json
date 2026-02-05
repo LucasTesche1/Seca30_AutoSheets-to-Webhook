@@ -1,0 +1,25 @@
+{
+  "timeZone": "America/New_York",
+  "dependencies": {
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/spreadsheets.currentonly",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/script.external_request"
+  ],
+  "sheets": {
+    "macros": [{
+      "menuName": "Venc Ordem",
+      "functionName": "VencOrdem"
+    }, {
+      "menuName": "Alfabetica Ordem",
+      "functionName": "AlfabeticaOrdem"
+    }, {
+      "menuName": "iteraExcel",
+      "functionName": "iteraExcel",
+      "defaultShortcut": "Ctrl+Alt+Shift+0"
+    }]
+  }
+}

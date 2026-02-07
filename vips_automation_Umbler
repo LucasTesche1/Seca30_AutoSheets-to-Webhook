@@ -9,6 +9,19 @@ const UMBLER_CONFIG = {
   token: "gsheets-2026-02-06-2094-02-24--3A185F99EE642369A819C7FD6CDAAE935761D5EBB253075294D4A475D7D18374"             // Caso a API exija Bearer Token ou API Key
 };
 
+function registrarLog(nome, contato, dias, mensagem, tipo, status) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var abaLog = ss.getSheetByName("Log_Envios");
+  
+  if (!abaLog) {
+    abaLog = ss.insertSheet("Log_Envios");
+    abaLog.appendRow(["Data/Hora", "Nome", "Contato", "Dias", "Mensagem", "Tipo", "Status"]);
+    abaLog.getRange("A1:G1").setFontWeight("bold").setBackground("#f3f3f3");
+  }
+  
+  abaLog.appendRow([new Date(), nome, contato, dias, mensagem, tipo, status]);
+}
+
 /**
  * Cria o menu personalizado.
  */
@@ -35,15 +48,15 @@ function iteraExcelEnviaWebhookUmbler() {
   planilha.toast("Iniciando envio via UmblerTalk...", "Automação", 3);
 
   for (var i = 1; i < dados.length; i++) {
-    var linha = dados[i];
+    var dadosLinha = dados[i];
 
-    var mensagem     = linha[8];   // Coluna I
-    var contato      = linha[9];   // Coluna J
-    var nome         = linha[1];   // Coluna B
-    var statusEnvio  = linha[10];  // Coluna K (checkbox)
+    var mensagem     = dadosLinha[8];   // Coluna I
+    var contato      = dadosLinha[9];   // Coluna J
+    var nome         = dadosLinha[1];   // Coluna B
+    var statusEnvio  = dadosLinha[10];  // Coluna K (checkbox)
 
     // ❌ Pula se já enviado
-    if (statusEnvio === true) continue;
+    if (statusEnvio === true || nome === null || nome == "") continue;
 
     // ❌ Validação básica
     if (!mensagem || !contato) {
@@ -80,9 +93,27 @@ function iteraExcelEnviaWebhookUmbler() {
       var body = response.getContentText();
 
       if (statusCode === 200 || statusCode === 201) {
+
+        registrarLog(
+          nome, 
+          telefoneLimpo, 
+          dadosLinha[4], 
+          mensagem, 
+          "Bulk", 
+          "✅Enviado")
+
         contagemProcessados++;
         atualizacoesStatus.push([true]);
       } else {
+
+        registrarLog(
+          nome, 
+          telefoneLimpo, 
+          dadosLinha[4],
+          mensagem,
+          "Bulk",
+          "Erro HTTP linha "+ statusCode)
+          
         console.log("Erro HTTP linha " + (i + 1) + ": " + statusCode + " | " + body);
         atualizacoesStatus.push([false]);
       }
@@ -184,9 +215,27 @@ function enviarApenasLinhaSelecionada() {
     var body = response.getContentText();
 
     if (statusCode === 200 || statusCode === 201) {
+
+      registrarLog(
+          nome, 
+          telefoneLimpo, 
+          dadosLinha[4], 
+          mensagem, 
+          "Single", 
+          "✅Enviado")
+
       aba.getRange(linhaAtiva, 11).setValue(true); // Marca checkbox
       planilha.toast("Mensagem enviada com sucesso ✅", "UmblerTalk", 5);
     } else {
+
+      registrarLog(
+          nome, 
+          telefoneLimpo, 
+          dadosLinha[4],
+          mensagem,
+          "Single",
+          "Erro HTTP linha " + linhaAtiva + ": " + statusCode)
+
       console.log("Erro HTTP linha " + linhaAtiva + ": " + statusCode + " | " + body);
       SpreadsheetApp.getUi().alert("Erro Umbler: " + body);
     }

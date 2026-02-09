@@ -23,7 +23,7 @@ function registrarLog(nome, contato, dias, mensagem, tipo, status) {
 
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
-  ui.createMenu('💋Enviar UmblerTalk')
+  ui.createMenu('✈Enviar UmblerTalk')
       .addItem('Enviar Linha Selecionada (Single)', 'enviarApenasLinhaSelecionada')
       .addSeparator()
       .addItem('Enviar Todas as Linhas (Bulk)', 'iteraExcelEnviaWebhookUmbler')
@@ -105,6 +105,7 @@ function iteraExcelEnviaWebhookUmbler() {
       muteHttpExceptions: true
     };
 
+    Utilities.sleep(1000)
     try {
       var response = UrlFetchApp.fetch(UMBLER_CONFIG.url, opcoes);
       var statusCode = response.getResponseCode();
@@ -121,7 +122,6 @@ function iteraExcelEnviaWebhookUmbler() {
       if (contagemProcessados % 5 === 0) {
         planilha.toast("Enviados: " + contagemProcessados, "Progresso Umbler", 2);
       }
-      Utilities.sleep(300);
 
     } catch (e) {
       console.log("Erro na linha " + (i + 1) + ": " + e);

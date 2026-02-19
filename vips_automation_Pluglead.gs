@@ -2,7 +2,7 @@
  * CONFIGURAÇÕES PLUGLEAD
  */
 const PLUGLEAD_CONFIG = {
-  url: "https://webhook.pluglead.com/webhook/fdbbd888-709b-4711-8c09-8ddb1d68641d"
+  url: ""
 };
 
 function registrarLog(nome, contato, dias, mensagem, tipo, status) {
